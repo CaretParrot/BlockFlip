@@ -1,0 +1,9 @@
+body {
+    grid: auto / 100%;
+}
+
+canvas {
+    border-radius: 0rem;
+    padding: 0;
+    border: 0.25rem solid white;
+}
