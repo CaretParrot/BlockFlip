@@ -89,10 +89,18 @@ setInterval(function () {
     }
 
     if (!inputs.left && !inputs.right) {
-        if (objects.block.vx > 0) {
-            objects.block.ax = -friction;
-        } else if (objects.block.vx < 0) {
-            objects.block.ax = friction;
+        if (!jumping) {
+            if (objects.block.vx > 0) {
+                objects.block.ax = -friction;
+            } else if (objects.block.vx < 0) {
+                objects.block.ax = friction;
+            }
+        } else {
+            if (objects.block.vx > 0) {
+                objects.block.ax = -xAcceleration;
+            } else if (objects.block.vx < 0) {
+                objects.block.ax = xAcceleration;
+            }
         }
     }
 
