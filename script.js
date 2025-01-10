@@ -4,15 +4,19 @@ canvas.width = document.body.clientWidth - 72;
 canvas.height = document.body.clientHeight - 72;
 let painter = canvas.getContext("2d");
 let jumping = false;
+
 let inputs = {
     left: false,
     right: false,
     up: false
 }
+
 const g = 9.8 / 10;
-const jumpPower = 15;
+const jumpPower = 12;
 const friction = 1;
 const xAcceleration = 0.2;
+const maxVelocity = 5;
+const velocityLimit = 0.3;
 
 window.onresize = function (event) {
     canvas.width = document.body.clientWidth - 72;
@@ -42,7 +46,8 @@ let objects = {
         step: new GameObject(100, 20, 100, 20, "hsl(0, 0%, 50%)"),
         leftWall: new GameObject(0, 0, 20, canvas.height, "hsl(0, 0%, 50%)"),
         rightWall: new GameObject(canvas.width - 20, 0, 20, canvas.height, "hsl(0, 0%, 50%)"),
-        ceiling: new GameObject(0, canvas.height - 20, canvas.width, 20, "hsl(0, 0%, 50%)")
+        ceiling: new GameObject(0, canvas.height - 20, canvas.width, 20, "hsl(0, 0%, 50%)"),
+        step1: new GameObject(200, 20, 100, 40, "hsl(0, 0%, 50%)"),
     }
 }
 
@@ -73,40 +78,25 @@ setInterval(function () {
         }
     }
 
-    if (inputs.left && inputs.right) {
-        objects.block.vx = 0;
-        objects.block.ax = 0;
-    } else if (inputs.left) {
+    if (inputs.left) {
         objects.block.ax = -xAcceleration;
-        console.log("Left");
     } else if (inputs.right) {
         objects.block.ax = xAcceleration;
-        console.log("Right");
     }
 
-    if (Math.abs(objects.block.vx) > 5) {
+    if (Math.abs(objects.block.vx) > maxVelocity) {
         objects.block.ax = 0;
     }
 
     if (!inputs.left && !inputs.right) {
-        if (!jumping) {
-            if (objects.block.vx > 0) {
-                objects.block.ax = -friction;
-            } else if (objects.block.vx < 0) {
-                objects.block.ax = friction;
-            }
-        } else {
-            if (objects.block.vx > 0) {
-                objects.block.ax = -xAcceleration;
-            } else if (objects.block.vx < 0) {
-                objects.block.ax = xAcceleration;
-            }
+        if (objects.block.vx > velocityLimit) {
+            objects.block.ax = -xAcceleration;
+        } else if (objects.block.vx < -velocityLimit) {
+            objects.block.ax = xAcceleration;
+        } else if (Math.abs(objects.block.vx) < velocityLimit) {
+            objects.block.ax = 0;
+            objects.block.vx = 0;
         }
-    }
-
-    if (Math.abs(objects.block.vx) < 0.2 && !inputs.right && !inputs.left) {
-        objects.block.ax = 0;
-        objects.block.vx = 0;
     }
 
     objects.block.vx += objects.block.ax;
@@ -123,7 +113,6 @@ setInterval(function () {
 }, 1000 / 60);
 
 onkeydown = function (event) {
-    keydown = true;
     if (event.key === "ArrowRight") {
         inputs.right = true;
     }
@@ -140,7 +129,15 @@ onkeydown = function (event) {
 }
 
 onkeyup = function (event) {
-    inputs.left = false;
-    inputs.right = false;
-    inputs.up = false;
+    if (event.key === "ArrowRight") {
+        inputs.right = false;
+    }
+
+    if (event.key === "ArrowLeft") {
+        inputs.left = false;
+    }
+
+    if (event.key === "ArrowUp") {
+        inputs.up = false;
+    }
 }

@@ -1,9 +1,10 @@
 body {
-    grid: auto / 100%;
+    grid: auto / 1fr 1fr 1fr;
 }
 
 canvas {
     border-radius: 0rem;
     padding: 0;
+    area: 2 / 1 / 2 / 3;
     border: 0.25rem solid white;
 }
